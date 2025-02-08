@@ -8,6 +8,7 @@ import { GUI } from "lil-gui";
 import RAPIER from "@dimforge/rapier3d-compat";
 import RapierDebugRenderer from "./RapierDebugRenderer.ts";
 import Car from "./Car.ts";
+import Box from "./Box.ts";
 
 await RAPIER.init(); // This line is only needed if using the compat version
 const gravity = new RAPIER.Vector3(0.0, -9.81, 0.0);
@@ -24,7 +25,10 @@ scene.add(gridHelper);
 await new RGBELoader().loadAsync("images/venice_sunset_1k.hdr").then((texture) => {
   texture.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = texture;
-  scene.environmentIntensity = 0.1; // new in Three r163. https://threejs.org/docs/#api/en/scenes/Scene.environmentIntensity
+  scene.environmentIntensity = 0.1;
+  scene.background = scene.environment;
+  scene.backgroundIntensity = 0.25;
+  scene.backgroundBlurriness = 0.3;
 });
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -149,6 +153,13 @@ world.createCollider(floorShape, floorBody);
 const car = new Car(keyMap, pivot);
 await car.init(scene, world, [0, 1, 0]);
 
+const boxes: Box[] = [];
+for (let x = 0; x < 8; x += 1) {
+  for (let y = 0; y < 8; y += 1) {
+    boxes.push(new Box(scene, world, [(x - 4) * 1.2, y + 1, -20]));
+  }
+}
+
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
@@ -189,6 +200,8 @@ function animate() {
   }
 
   car.update(delta);
+
+  boxes.forEach((b) => b.update());
 
   rapierDebugRenderer.update();
 

@@ -266,7 +266,7 @@ export default class Car {
 
     let targetVelocity = 0;
     if (this.keyMap["KeyW"]) {
-      targetVelocity = 500;
+      targetVelocity = 250;
     }
     if (this.keyMap["KeyS"]) {
       targetVelocity = -200;

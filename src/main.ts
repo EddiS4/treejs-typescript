@@ -120,7 +120,7 @@ const onDocumentKey = (e: KeyboardEvent) => {
 };
 
 document.addEventListener("click", () => {
-  renderer.domElement.requestPointerLock();
+  //renderer.domElement.requestPointerLock();
 });
 document.addEventListener("pointerlockchange", () => {
   if (document.pointerLockElement === renderer.domElement) {
@@ -137,6 +137,63 @@ document.addEventListener("pointerlockchange", () => {
     renderer.domElement.removeEventListener("wheel", onDocumentMouseWheel);
   }
 });
+
+const touchControls = document.getElementById("touch-move-controls");
+if (touchControls) {
+  /*
+  touchControls.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    keyMap["KeyW"] = true;
+  });
+  touchControls.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    keyMap["KeyW"] = true;
+  });
+  touchControls.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    keyMap["KeyW"] = e.touches[0].clientY < window.innerHeight / 2;
+  });
+  */
+
+  var rect = touchControls.getBoundingClientRect();
+  console.log(rect.x + " " + rect.y + " " + rect.width + " " + rect.height);
+  var center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+  console.log(center.x + " " + center.y);
+  var minX = rect.x;
+  var minY = rect.y;
+  var maxX = rect.x + rect.width;
+  var maxY = rect.y + rect.height;
+
+  touchControls.addEventListener("pointerdown", (e) => {
+    if (e.clientX > minX && e.clientX < maxX && e.clientY > minY && e.clientY < maxY) {
+      e.preventDefault();
+      console.log(e.clientX + " " + e.clientY);
+
+      if (e.clientX < center.x - 20) {
+        keyMap["KeyA"] = true;
+      } else if (e.clientX > center.x + 20) {
+        keyMap["KeyD"] = true;
+      }
+      if (e.clientY < center.y - 20) {
+        keyMap["KeyW"] = true;
+      } else if (e.clientY > center.y + 20) {
+        keyMap["KeyS"] = true;
+      }
+    }
+  });
+  touchControls.addEventListener("pointerup", (e) => {
+    e.preventDefault();
+    keyMap["KeyW"] = false;
+    keyMap["KeyA"] = false;
+    keyMap["KeyS"] = false;
+    keyMap["KeyD"] = false;
+  });
+
+  touchControls.addEventListener("mousemove", (e) => {
+    e.preventDefault();
+    keyMap["KeyW"] = false;
+  });
+}
 
 // const controls = new OrbitControls(camera, renderer.domElement);
 // controls.enableDamping = true;

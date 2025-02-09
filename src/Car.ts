@@ -31,6 +31,7 @@ export default class Car {
   v = new Vector3();
   keyMap: { [key: string]: boolean };
   pivot: Object3D;
+  initialPosition: [number, number, number] = [0, 1, 0];
 
   constructor(keyMap: { [key: string]: boolean }, pivot: Object3D) {
     this.followTarget.position.set(0, 1, 0);
@@ -41,6 +42,7 @@ export default class Car {
   }
 
   async init(scene: Scene, world: World, position: [number, number, number]) {
+    this.initialPosition = position;
     await new GLTFLoader().loadAsync("models/sedanSports.glb").then((gltf) => {
       const carMesh = gltf.scene.getObjectByName("body") as Group;
       carMesh.position.set(0, 0, 0);
@@ -252,6 +254,15 @@ export default class Car {
       this.dynamicBodies.push([new Object3D(), axelFRBody]);
       this.dynamicBodies.push([new Object3D(), axelFLBody]);
     });
+  }
+
+  reset() {
+    this.pivot.position.copy(new Vector3(...this.initialPosition));
+
+    this.carBody?.setEnabled(false);
+    this.carBody?.setRotation(new Quaternion(0, 0, 0, 1), true);
+    this.carBody?.setTranslation(new Vector3(...this.initialPosition), true);
+    this.carBody?.setEnabled(true);
   }
 
   update(delta: number) {

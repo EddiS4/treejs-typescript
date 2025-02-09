@@ -137,7 +137,7 @@ const onDocumentKey = (e: KeyboardEvent) => {
 };
 
 document.addEventListener("click", () => {
-  renderer.domElement.requestPointerLock();
+  //renderer.domElement.requestPointerLock();
 });
 document.addEventListener("pointerlockchange", () => {
   if (document.pointerLockElement === renderer.domElement) {
@@ -155,48 +155,53 @@ document.addEventListener("pointerlockchange", () => {
   }
 });
 
-const touchControls = document.getElementById("touch-move-controls");
-if (touchControls) {
-  var rect = touchControls.getBoundingClientRect();
-  var center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
-  var minX = rect.x;
-  var minY = rect.y;
-  var maxX = rect.x + rect.width;
-  var maxY = rect.y + rect.height;
+const touchControls = document.getElementById("touch-move-controls") as HTMLDivElement;
+var rect = touchControls.getBoundingClientRect();
+var center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+var minX = rect.x;
+var minY = rect.y;
+var maxX = rect.x + rect.width;
+var maxY = rect.y + rect.height;
 
-  touchControls.addEventListener("pointerdown", (e) => {
-    if (e.clientX > minX && e.clientX < maxX && e.clientY > minY && e.clientY < maxY) {
-      e.preventDefault();
+touchControls.addEventListener("pointerdown", (e) => {
+  if (e.clientX > minX && e.clientX < maxX && e.clientY > minY && e.clientY < maxY) {
+    e.preventDefault();
 
-      if (e.clientX < center.x - 20) {
-        keyMap["KeyA"] = true;
-      } else if (e.clientX > center.x + 20) {
-        keyMap["KeyD"] = true;
-      }
-      if (e.clientY < center.y - 20) {
-        keyMap["KeyW"] = true;
-      } else if (e.clientY > center.y + 20) {
-        keyMap["KeyS"] = true;
-      }
+    if (e.clientX < center.x - 20) {
+      keyMap["KeyA"] = true;
+    } else if (e.clientX > center.x + 20) {
+      keyMap["KeyD"] = true;
     }
-  });
-  touchControls.addEventListener("pointerup", (e) => {
-    e.preventDefault();
-    keyMap["KeyW"] = false;
-    keyMap["KeyA"] = false;
-    keyMap["KeyS"] = false;
-    keyMap["KeyD"] = false;
-  });
+    if (e.clientY < center.y - 20) {
+      keyMap["KeyW"] = true;
+    } else if (e.clientY > center.y + 20) {
+      keyMap["KeyS"] = true;
+    }
+  }
+});
+touchControls.addEventListener("pointerup", (e) => {
+  e.preventDefault();
+  keyMap["KeyW"] = false;
+  keyMap["KeyA"] = false;
+  keyMap["KeyS"] = false;
+  keyMap["KeyD"] = false;
+});
 
-  touchControls.addEventListener("mousemove", (e) => {
-    e.preventDefault();
-    keyMap["KeyW"] = false;
-  });
-}
+touchControls.addEventListener("mousemove", (e) => {
+  e.preventDefault();
+  keyMap["KeyW"] = false;
+});
 
-// const controls = new OrbitControls(camera, renderer.domElement);
-// controls.enableDamping = true;
-// controls.target.y = 1;
+const resetButton = document.getElementById("reset-button") as HTMLDivElement;
+resetButton.addEventListener("pointerdown", () => {
+  car.reset();
+});
+
+/*
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.y = 1;
+*/
 
 const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(200, 1, 200), new THREE.MeshPhongMaterial());
 floorMesh.receiveShadow = true;

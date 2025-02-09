@@ -9,5 +9,5 @@ body {
   left: 20px;
   width: 256px;
   height: 256px;
-  background-image: url("images/touch-move-controls.png");
+  background-image: url("/images/touch-move-controls.png");
 }

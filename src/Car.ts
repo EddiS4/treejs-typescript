@@ -154,31 +154,31 @@ export default class Car {
       // create shapes for carBody, wheelBodies and axelBodies
       const carShape = (ColliderDesc.convexMesh(new Float32Array(positions)) as ColliderDesc)
         .setMass(1)
-        .setRestitution(0.5)
+        .setRestitution(0.1)
         .setFriction(3)
         .setCollisionGroups(131073);
       const wheelBLShape = ColliderDesc.cylinder(0.1, 0.3)
         .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 2))
         .setTranslation(-0.2, 0, 0)
-        .setRestitution(0.5)
+        .setRestitution(0.1)
         .setFriction(2)
         .setCollisionGroups(262145);
       const wheelBRShape = ColliderDesc.cylinder(0.1, 0.3)
         .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
         .setTranslation(0.2, 0, 0)
-        .setRestitution(0.5)
+        .setRestitution(0.1)
         .setFriction(2)
         .setCollisionGroups(262145);
       const wheelFLShape = ColliderDesc.cylinder(0.1, 0.3)
         .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
         .setTranslation(-0.2, 0, 0)
-        .setRestitution(0.5)
+        .setRestitution(0.1)
         .setFriction(2.5)
         .setCollisionGroups(262145);
       const wheelFRShape = ColliderDesc.cylinder(0.1, 0.3)
         .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
         .setTranslation(0.2, 0, 0)
-        .setRestitution(0.5)
+        .setRestitution(0.1)
         .setFriction(2.5)
         .setCollisionGroups(262145);
       const axelFLShape = ColliderDesc.cuboid(0.1, 0.1, 0.1)
@@ -276,10 +276,10 @@ export default class Car {
 
     let targetSteer = 0;
     if (this.keyMap["KeyA"]) {
-      targetSteer += 0.6;
+      targetSteer += 0.3;
     }
     if (this.keyMap["KeyD"]) {
-      targetSteer -= 0.6;
+      targetSteer -= 0.3;
     }
 
     (this.wheelFLAxel as PrismaticImpulseJoint).configureMotorPosition(targetSteer, 100, 10);

@@ -1,7 +1,6 @@
 import "./style.css";
 import * as THREE from "three";
 //import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import Stats from "three/addons/libs/stats.module.js";
 import { Lensflare, LensflareElement } from "three/addons/objects/Lensflare.js";
 import { GUI } from "lil-gui";
@@ -10,7 +9,12 @@ import RapierDebugRenderer from "./RapierDebugRenderer.ts";
 import Car from "./Car.ts";
 import Box from "./Box.ts";
 
+const progressBar = document.getElementById("progress-bar") as HTMLProgressElement;
+progressBar.value = 0;
+
 await RAPIER.init(); // This line is only needed if using the compat version
+progressBar.value = 10;
+
 const gravity = new RAPIER.Vector3(0.0, -9.81, 0.0);
 const world = new RAPIER.World(gravity);
 const dynamicBodies: [THREE.Object3D, RAPIER.RigidBody][] = [];
@@ -22,14 +26,25 @@ const gridHelper = new THREE.GridHelper(200, 100, 0x222222, 0x222222);
 gridHelper.position.y = -0.5;
 scene.add(gridHelper);
 
-await new RGBELoader().loadAsync("images/venice_sunset_1k.hdr").then((texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = texture;
-  scene.environmentIntensity = 0.1;
-  scene.background = scene.environment;
-  scene.backgroundIntensity = 0.25;
-  scene.backgroundBlurriness = 0.3;
-});
+// await new RGBELoader().loadAsync("images/venice_sunset_1k.hdr").then((texture) => {
+//   texture.mapping = THREE.EquirectangularReflectionMapping;
+//   scene.environment = texture;
+//   scene.environmentIntensity = 0.1;
+//   scene.background = scene.environment;
+//   scene.backgroundIntensity = 0.25;
+//   scene.backgroundBlurriness = 0.3;
+// });
+
+const environmentTexture = new THREE.CubeTextureLoader()
+  .setPath("images/skybox/")
+  .load(["px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"]);
+scene.environment = environmentTexture;
+scene.background = environmentTexture;
+progressBar.value = 30;
+
+//scene.backgroundIntensity = 1;
+//scene.backgroundBlurriness = 0.3;
+//scene.environmentIntensity = 0.1;
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(0, 0, 4);
@@ -54,7 +69,9 @@ scene.add(lightHelper);
 
 const textureLoader = new THREE.TextureLoader();
 const textureFlare0 = textureLoader.load("images/lensflare0.png");
+progressBar.value = 50;
 const textureFlare3 = textureLoader.load("images/lensflare3.png");
+progressBar.value = 60;
 
 const lensflare = new Lensflare();
 lensflare.addElement(new LensflareElement(textureFlare0, 1000, 0));
@@ -120,7 +137,7 @@ const onDocumentKey = (e: KeyboardEvent) => {
 };
 
 document.addEventListener("click", () => {
-  //renderer.domElement.requestPointerLock();
+  renderer.domElement.requestPointerLock();
 });
 document.addEventListener("pointerlockchange", () => {
   if (document.pointerLockElement === renderer.domElement) {
@@ -140,21 +157,6 @@ document.addEventListener("pointerlockchange", () => {
 
 const touchControls = document.getElementById("touch-move-controls");
 if (touchControls) {
-  /*
-  touchControls.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    keyMap["KeyW"] = true;
-  });
-  touchControls.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    keyMap["KeyW"] = true;
-  });
-  touchControls.addEventListener("touchmove", (e) => {
-    e.preventDefault();
-    keyMap["KeyW"] = e.touches[0].clientY < window.innerHeight / 2;
-  });
-  */
-
   var rect = touchControls.getBoundingClientRect();
   var center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
   var minX = rect.x;
@@ -200,12 +202,14 @@ const floorMesh = new THREE.Mesh(new THREE.BoxGeometry(200, 1, 200), new THREE.M
 floorMesh.receiveShadow = true;
 floorMesh.position.y = -1;
 scene.add(floorMesh);
+
 const floorBody = world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(0, -1, 0));
 const floorShape = RAPIER.ColliderDesc.cuboid(100, 0.5, 100).setCollisionGroups(65542);
 world.createCollider(floorShape, floorBody);
 
 const car = new Car(keyMap, pivot);
 await car.init(scene, world, [0, 0.01, 0]);
+progressBar.value = 80;
 
 const boxes: Box[] = [];
 for (let x = 0; x < 8; x += 1) {
@@ -216,6 +220,7 @@ for (let x = 0; x < 8; x += 1) {
 
 const stats = new Stats();
 document.body.appendChild(stats.dom);
+progressBar.value = 90;
 
 const gui = new GUI();
 gui.close();
@@ -238,6 +243,8 @@ environmentFolder.add(scene, "environmentIntensity", 0, 2, 0.01);
 
 const lightFolder = gui.addFolder("Light Helper");
 lightFolder.add(lightHelper, "visible");
+progressBar.value = 100;
+progressBar.style.display = "none";
 
 const clock = new THREE.Clock();
 let delta;

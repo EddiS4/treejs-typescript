@@ -257,12 +257,19 @@ export default class Car {
   }
 
   reset() {
-    this.pivot.position.copy(new Vector3(...this.initialPosition));
+    this.keyMap["KeyA"] = false;
+    this.keyMap["KeyD"] = false;
+    this.keyMap["KeyW"] = false;
+    this.keyMap["KeyS"] = false;
 
-    this.carBody?.setEnabled(false);
-    this.carBody?.setRotation(new Quaternion(0, 0, 0, 1), true);
-    this.carBody?.setTranslation(new Vector3(...this.initialPosition), true);
-    this.carBody?.setEnabled(true);
+    for (let i = 0, n = this.dynamicBodies.length; i < n; i++) {
+      this.dynamicBodies[i][1].setLinvel(new Vector3(0, 0, 0), true);
+      this.dynamicBodies[i][1].setAngvel(new Vector3(0, 0, 0), true);
+      this.dynamicBodies[i][1].resetForces(true);
+      this.dynamicBodies[i][1].resetTorques(true);
+      this.dynamicBodies[i][1].setTranslation(new Vector3(...this.initialPosition), true);
+      this.dynamicBodies[i][1].setRotation(new Quaternion(0, 0, 0, 1), true);
+    }
   }
 
   update(delta: number) {

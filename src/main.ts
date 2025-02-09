@@ -156,9 +156,7 @@ if (touchControls) {
   */
 
   var rect = touchControls.getBoundingClientRect();
-  console.log(rect.x + " " + rect.y + " " + rect.width + " " + rect.height);
   var center = new THREE.Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
-  console.log(center.x + " " + center.y);
   var minX = rect.x;
   var minY = rect.y;
   var maxX = rect.x + rect.width;
@@ -167,7 +165,6 @@ if (touchControls) {
   touchControls.addEventListener("pointerdown", (e) => {
     if (e.clientX > minX && e.clientX < maxX && e.clientY > minY && e.clientY < maxY) {
       e.preventDefault();
-      console.log(e.clientX + " " + e.clientY);
 
       if (e.clientX < center.x - 20) {
         keyMap["KeyA"] = true;
@@ -204,11 +201,11 @@ floorMesh.receiveShadow = true;
 floorMesh.position.y = -1;
 scene.add(floorMesh);
 const floorBody = world.createRigidBody(RAPIER.RigidBodyDesc.fixed().setTranslation(0, -1, 0));
-const floorShape = RAPIER.ColliderDesc.cuboid(100, 0.5, 100); //.setCollisionGroups(65542)
+const floorShape = RAPIER.ColliderDesc.cuboid(100, 0.5, 100).setCollisionGroups(65542);
 world.createCollider(floorShape, floorBody);
 
 const car = new Car(keyMap, pivot);
-await car.init(scene, world, [0, 1, 0]);
+await car.init(scene, world, [0, 0.01, 0]);
 
 const boxes: Box[] = [];
 for (let x = 0; x < 8; x += 1) {
@@ -221,6 +218,7 @@ const stats = new Stats();
 document.body.appendChild(stats.dom);
 
 const gui = new GUI();
+gui.close();
 gui.add(rapierDebugRenderer, "enabled").name("Rapier Degug Renderer");
 
 const physicsFolder = gui.addFolder("Physics");
